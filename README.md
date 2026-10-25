@@ -32,6 +32,22 @@ All numbers, per-seed runs and training curves are in [`results/metrics.json`](r
 - **Some errors are label noise.** Several "positive" tweets in the data are prayers or news headlines, and one training tweet labelled positive reads "the worst thing about today is your absence :-(".
 - **Picking a run on validation is noisy.** The selected run had the best validation score (0.552) but the lowest test score among its seeds (0.533). That's why the table reports mean ± std over seeds and not a single best run.
 
+### How this compares with published results
+
+The [ASTD paper](https://aclanthology.org/D15-1299/) (Nabil et al., 2015) reports the same 4-class unbalanced split with **weighted** F1, where big classes count more, and classic models trained on train + validation.
+
+| | Test accuracy | Test weighted F1 |
+|---|---|---|
+| Always predict "objective" | 0.669 | |
+| Best model in the ASTD paper | 0.694 | 0.633 |
+| This repo's TF-IDF baseline | 0.618 | 0.633 |
+| CAMeLBERT-Mix (3 seeds) | 0.656 | **0.679 ± 0.001** |
+
+- **The baseline is solid.** It matches the paper's best weighted F1 exactly.
+- **Fine-tuning adds about 0.05 weighted F1** over the best published classic model.
+- **Accuracy is misleading on this data.** Two thirds of the tweets are objective, so a model that always says "objective" scores 0.669. The class weights here deliberately trade some accuracy for catching the opinion classes.
+- **Other published ASTD numbers use easier setups,** so they aren't comparable. The [MARBERT paper](https://arxiv.org/abs/2101.01785), for example, uses 3 classes without "mixed" (more training data) and a balanced binary version.
+
 ![Confusion matrix](results/confusion_matrix.png)
 
 ## Approach
