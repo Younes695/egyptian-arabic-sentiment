@@ -4,9 +4,10 @@
 
 Writes OUT_DIR/onnx/model.onnx and OUT_DIR/onnx/model_quantized.onnx, the file names
 Transformers.js loads for dtype "fp32" and "q8". Both are compared with the PyTorch model on
-the ASTD validation tweets. Several int8 settings are tried, because quantizing every layer
-can change too many predictions; the smallest file that keeps at least MIN_INT8_AGREEMENT of
-PyTorch's labels is kept. Nothing is uploaded if no setting passes.
+the ASTD validation tweets. Several int8 settings are tried. An int8 file passes when its
+validation macro-F1 (against the true labels) is at most MAX_INT8_F1_DROP below PyTorch's;
+the smallest passing file is kept. Nothing is uploaded if no setting passes. Label agreement
+with PyTorch is reported too, but it isn't the gate: a flipped label can flip to the right one.
 """
 
 from __future__ import annotations
@@ -24,7 +25,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 
 INPUTS = ["input_ids", "attention_mask", "token_type_ids"]
-MIN_INT8_AGREEMENT = 0.97
+MAX_INT8_F1_DROP = 0.01
 
 # Signed int8 weights times unsigned int8 activations can saturate on CPUs without VNNI
 # instructions, which flipped about 11% of labels in the first export (and 56% with
@@ -32,7 +33,6 @@ MIN_INT8_AGREEMENT = 0.97
 # "all" also quantizes the embedding lookup (Gather), which roughly halves the file again.
 QUANT_OPTIONS = [
     {"name": "all-uint8", "op_types_to_quantize": None, "weight_type": "QUInt8", "reduce_range": False},
-    {"name": "all-int8-reduce-range", "op_types_to_quantize": None, "weight_type": "QInt8", "reduce_range": True},
     {"name": "matmul-uint8", "op_types_to_quantize": ["MatMul"], "weight_type": "QUInt8", "reduce_range": False},
 ]
 
@@ -105,29 +105,34 @@ def onnx_logits(path: Path, batches) -> np.ndarray:
     return np.concatenate([session.run(None, feeds)[0] for feeds in batches])
 
 
-def compare(ref: np.ndarray, other: np.ndarray) -> dict:
+def compare(ref: np.ndarray, other: np.ndarray, gold: list[str], id2label: dict) -> dict:
+    from egysent.metrics import summarize
+
     return {
         "max_logit_diff": float(np.abs(other - ref).max()),
         "same_label": float((other.argmax(-1) == ref.argmax(-1)).mean()),
+        "macro_f1": summarize(gold, [id2label[i] for i in other.argmax(-1).tolist()])["macro_f1"],
     }
 
 
-def export_and_check(model, tokenizer, out_dir: Path, texts: list[str], options=QUANT_OPTIONS) -> dict:
+def export_and_check(model, tokenizer, out_dir: Path, texts: list[str], gold: list[str], options=QUANT_OPTIONS) -> dict:
     """Export fp32, try each int8 option, keep the smallest int8 file that passes."""
     onnx_dir, candidates_dir = out_dir / "onnx", out_dir / "candidates"
     fp32 = export_fp32(model, tokenizer, onnx_dir / "model.onnx")
     batches, ref = reference_logits(model, tokenizer, texts)
+    id2label = model.config.id2label
     report = {
         "texts": len(texts),
-        "fp32": {**compare(ref, onnx_logits(fp32, batches)), "mb": round(fp32.stat().st_size / 1e6, 1)},
+        "pytorch_macro_f1": compare(ref, ref, gold, id2label)["macro_f1"],
+        "fp32": {**compare(ref, onnx_logits(fp32, batches), gold, id2label), "mb": round(fp32.stat().st_size / 1e6, 1)},
         "int8_options": [],
-        "reference_labels": [model.config.id2label[i] for i in ref.argmax(-1).tolist()],
+        "reference_labels": [id2label[i] for i in ref.argmax(-1).tolist()],
     }
     for option in options:
         path = quantize(fp32, candidates_dir / f"{option['name']}.onnx", option)
-        result = {"name": option["name"], **compare(ref, onnx_logits(path, batches)), "mb": round(path.stat().st_size / 1e6, 1)}
+        result = {"name": option["name"], **compare(ref, onnx_logits(path, batches), gold, id2label), "mb": round(path.stat().st_size / 1e6, 1)}
         report["int8_options"].append(result)
-    passing = [r for r in report["int8_options"] if r["same_label"] >= MIN_INT8_AGREEMENT]
+    passing = [r for r in report["int8_options"] if report["pytorch_macro_f1"] - r["macro_f1"] <= MAX_INT8_F1_DROP]
     if passing:
         chosen = min(passing, key=lambda r: r["mb"])
         shutil.copyfile(candidates_dir / f"{chosen['name']}.onnx", onnx_dir / "model_quantized.onnx")
@@ -150,8 +155,9 @@ def main() -> None:
 
     model = AutoModelForSequenceClassification.from_pretrained(args.checkpoint)
     tokenizer = AutoTokenizer.from_pretrained(args.checkpoint)
-    texts = [clean_tweet(e.text) for e in load_splits(download("data"))["validation"]]
-    report = export_and_check(model, tokenizer, Path(args.out_dir), texts)
+    validation = load_splits(download("data"))["validation"]
+    texts = [clean_tweet(e.text) for e in validation]
+    report = export_and_check(model, tokenizer, Path(args.out_dir), texts, [e.label for e in validation])
     reference = report.pop("reference_labels")
     print("ONNX_CHECK", json.dumps(report))
     if args.dump:
