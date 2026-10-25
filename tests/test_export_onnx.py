@@ -1,4 +1,4 @@
-"""ONNX export + int8 quantization on a tiny random model: files are written and match PyTorch."""
+"""ONNX export + int8 quantization on a tiny random model: files are written and fp32 matches PyTorch."""
 
 import sys
 from pathlib import Path
@@ -10,16 +10,38 @@ pytest.importorskip("onnxruntime")
 pytest.importorskip("onnxscript")
 pytest.importorskip("torch")
 
-from export_onnx import check, export  # noqa: E402
+import export_onnx  # noqa: E402
 from test_train_smoke import tiny_model_and_tokenizer  # noqa: E402
 
+TEXTS = ["حلو اوي", "وحش جدا", "الماتش بكرة", "حلو بس غالي"]
 
-def test_export_writes_both_files_and_matches_pytorch(tmp_path):
+
+def test_fp32_matches_and_every_int8_option_is_scored(tmp_path):
     model, tokenizer = tiny_model_and_tokenizer(tmp_path)
-    fp32, int8 = export(model.eval(), tokenizer, tmp_path / "out")
+    report = export_onnx.export_and_check(model.eval(), tokenizer, tmp_path / "out", TEXTS)
 
-    assert fp32.name == "model.onnx" and int8.name == "model_quantized.onnx"
-    report = check(model, tokenizer, fp32, int8, ["حلو اوي", "وحش جدا", "الماتش بكرة", "حلو بس غالي"])
     assert report["texts"] == 4
-    assert report["fp32_max_logit_diff"] < 1e-3
-    assert report["fp32_same_label"] == 1.0
+    assert report["fp32"]["max_logit_diff"] < 1e-3
+    assert report["fp32"]["same_label"] == 1.0
+    assert [o["name"] for o in report["int8_options"]] == [o["name"] for o in export_onnx.QUANT_OPTIONS]
+    assert len(report["reference_labels"]) == 4
+    assert (tmp_path / "out" / "onnx" / "model.onnx").exists()
+
+
+def test_smallest_passing_int8_file_is_kept(tmp_path, monkeypatch):
+    model, tokenizer = tiny_model_and_tokenizer(tmp_path)
+    monkeypatch.setattr(export_onnx, "MIN_INT8_AGREEMENT", 0.0)  # every option passes
+    report = export_onnx.export_and_check(model.eval(), tokenizer, tmp_path / "out", TEXTS)
+
+    smallest = min(report["int8_options"], key=lambda o: o["mb"])["name"]
+    assert report["int8_chosen"] == smallest
+    assert (tmp_path / "out" / "onnx" / "model_quantized.onnx").exists()
+
+
+def test_nothing_is_kept_when_no_option_passes(tmp_path, monkeypatch):
+    model, tokenizer = tiny_model_and_tokenizer(tmp_path)
+    monkeypatch.setattr(export_onnx, "MIN_INT8_AGREEMENT", 1.01)  # impossible
+    report = export_onnx.export_and_check(model.eval(), tokenizer, tmp_path / "out", TEXTS)
+
+    assert "int8_chosen" not in report
+    assert not (tmp_path / "out" / "onnx" / "model_quantized.onnx").exists()

@@ -16,7 +16,7 @@ from transformers import pipeline
 sys.path.insert(0, str(Path(__file__).resolve().parent / "src"))
 from egysent.preprocess import clean_tweet  # noqa: E402
 
-MODEL_ID = os.getenv("MODEL_ID", "Younes695/egyptian-arabic-sentiment")
+MODEL_ID = os.getenv("MODEL_ID", "abdElrahmanWaelYounes/egyptian-arabic-sentiment")
 DISPLAY = {"positive": "Positive 😊", "negative": "Negative 😠", "mixed": "Mixed 😐", "objective": "Objective (no opinion) 📰"}
 
 classifier = pipeline("text-classification", model=MODEL_ID, top_k=None)
