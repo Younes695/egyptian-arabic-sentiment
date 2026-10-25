@@ -44,12 +44,26 @@ All numbers, per-seed runs and training curves are in [`results/metrics.json`](r
 
 ## Try it
 
-`app.py` is a Gradio demo: type a sentence and see the score for each class. It loads the fine-tuned model from the Hugging Face Hub (`MODEL_ID`).
+- **[Live demo](https://younes695.github.io/demos/sentiment/)**: runs the model in your browser with Transformers.js. Nothing you type is sent to a server.
+- **[Model on Hugging Face](https://huggingface.co/abdElrahmanWaelYounes/egyptian-arabic-sentiment)**: weights and a model card.
+- **Run it locally**: `app.py` is a Gradio app that loads the model from the Hub.
 
-```bash
-pip install -r requirements-app.txt
-python app.py
-```
+  ```bash
+  pip install -r requirements-app.txt
+  python app.py
+  ```
+
+### Browser version
+
+`scripts/export_onnx.py` exports the selected model to ONNX and checks it against PyTorch on the 1,999 validation tweets before uploading.
+
+| File | Size | Same label as PyTorch | Validation macro-F1 |
+|---|---|---|---|
+| PyTorch | 440 MB | | 0.551 |
+| ONNX fp32 | 438 MB | 100% | 0.551 |
+| ONNX int8 (the demo) | 111 MB | 92% | 0.550 |
+
+The int8 file changes some labels, but its macro-F1 is only 0.002 lower, so the demo downloads a quarter of the size for nearly the same quality. In Transformers.js it takes about 42 ms per sentence on a CPU. Standard signed int8 settings did worse (89% and 44% same labels), so the script tries several settings and keeps the smallest one that loses at most 0.01 macro-F1. The tweet cleaning was ported to JavaScript and gives identical output on all 10k ASTD tweets.
 
 ## Reproduce
 

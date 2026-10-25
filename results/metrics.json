@@ -1,53 +1,417 @@
 {
   "dataset": "ASTD 4-class unbalanced official split",
   "run": "notebooks/train_colab.ipynb on a Colab T4 GPU, 2026-10-25. Scores rounded to 4 decimals.",
-  "test_support": {"positive": 159, "negative": 336, "mixed": 166, "objective": 1338},
+  "test_support": {
+    "positive": 159,
+    "negative": 336,
+    "mixed": 166,
+    "objective": 1338
+  },
   "baseline": {
     "model": "TF-IDF + logistic regression",
     "C": 1.0,
-    "validation": {"accuracy": 0.6313, "macro_f1": 0.454, "f1": {"positive": 0.3123, "negative": 0.4747, "mixed": 0.2551, "objective": 0.7739}},
-    "test": {"accuracy": 0.6178, "macro_f1": 0.4453, "f1": {"positive": 0.369, "negative": 0.4265, "mixed": 0.2187, "objective": 0.767}}
+    "validation": {
+      "accuracy": 0.6313,
+      "macro_f1": 0.454,
+      "f1": {
+        "positive": 0.3123,
+        "negative": 0.4747,
+        "mixed": 0.2551,
+        "objective": 0.7739
+      }
+    },
+    "test": {
+      "accuracy": 0.6178,
+      "macro_f1": 0.4453,
+      "f1": {
+        "positive": 0.369,
+        "negative": 0.4265,
+        "mixed": 0.2187,
+        "objective": 0.767
+      }
+    }
   },
   "runs": [
-    {"model": "CAMeL-Lab/bert-base-arabic-camelbert-da", "seed": 42, "best_epoch": 3,
-     "validation": {"accuracy": 0.6668, "macro_f1": 0.5436, "f1": {"positive": 0.446, "negative": 0.5683, "mixed": 0.3756, "objective": 0.7844}},
-     "test": {"accuracy": 0.6543, "macro_f1": 0.5371, "f1": {"positive": 0.5118, "negative": 0.5304, "mixed": 0.3309, "objective": 0.7751}},
-     "history": [{"epoch": 1, "train_loss": 1.212, "val_macro_f1": 0.4962}, {"epoch": 2, "train_loss": 0.8758, "val_macro_f1": 0.5266}, {"epoch": 3, "train_loss": 0.5898, "val_macro_f1": 0.5436}, {"epoch": 4, "train_loss": 0.4096, "val_macro_f1": 0.5291}]},
-    {"model": "CAMeL-Lab/bert-base-arabic-camelbert-da", "seed": 7, "best_epoch": 3,
-     "validation": {"accuracy": 0.6633, "macro_f1": 0.5297, "f1": {"positive": 0.4439, "negative": 0.5411, "mixed": 0.3422, "objective": 0.7914}},
-     "test": {"accuracy": 0.6513, "macro_f1": 0.5287, "f1": {"positive": 0.5113, "negative": 0.4806, "mixed": 0.3413, "objective": 0.7816}},
-     "history": [{"epoch": 1, "train_loss": 1.2205, "val_macro_f1": 0.4341}, {"epoch": 2, "train_loss": 0.8645, "val_macro_f1": 0.5268}, {"epoch": 3, "train_loss": 0.6004, "val_macro_f1": 0.5297}, {"epoch": 4, "train_loss": 0.4241, "val_macro_f1": 0.5247}]},
-    {"model": "CAMeL-Lab/bert-base-arabic-camelbert-da", "seed": 1234, "best_epoch": 4,
-     "validation": {"accuracy": 0.6608, "macro_f1": 0.5247, "f1": {"positive": 0.4163, "negative": 0.5513, "mixed": 0.3438, "objective": 0.7875}},
-     "test": {"accuracy": 0.6638, "macro_f1": 0.5464, "f1": {"positive": 0.4949, "negative": 0.5227, "mixed": 0.3832, "objective": 0.7847}},
-     "history": [{"epoch": 1, "train_loss": 1.2073, "val_macro_f1": 0.5221}, {"epoch": 2, "train_loss": 0.8793, "val_macro_f1": 0.5126}, {"epoch": 3, "train_loss": 0.6032, "val_macro_f1": 0.5124}, {"epoch": 4, "train_loss": 0.4217, "val_macro_f1": 0.5247}]},
-    {"model": "CAMeL-Lab/bert-base-arabic-camelbert-mix", "seed": 42, "best_epoch": 2,
-     "validation": {"accuracy": 0.6653, "macro_f1": 0.5375, "f1": {"positive": 0.4527, "negative": 0.5992, "mixed": 0.3112, "objective": 0.7869}},
-     "test": {"accuracy": 0.6568, "macro_f1": 0.5466, "f1": {"positive": 0.5147, "negative": 0.552, "mixed": 0.3459, "objective": 0.7738}},
-     "history": [{"epoch": 1, "train_loss": 1.1835, "val_macro_f1": 0.4986}, {"epoch": 2, "train_loss": 0.8452, "val_macro_f1": 0.5375}, {"epoch": 3, "train_loss": 0.5911, "val_macro_f1": 0.5373}, {"epoch": 4, "train_loss": 0.4326, "val_macro_f1": 0.5372}]},
-    {"model": "CAMeL-Lab/bert-base-arabic-camelbert-mix", "seed": 7, "best_epoch": 2,
-     "validation": {"accuracy": 0.6718, "macro_f1": 0.5515, "f1": {"positive": 0.4789, "negative": 0.6086, "mixed": 0.3341, "objective": 0.7844}},
-     "test": {"accuracy": 0.6548, "macro_f1": 0.5334, "f1": {"positive": 0.4916, "negative": 0.5422, "mixed": 0.3206, "objective": 0.7793}},
-     "history": [{"epoch": 1, "train_loss": 1.1963, "val_macro_f1": 0.4848}, {"epoch": 2, "train_loss": 0.8368, "val_macro_f1": 0.5515}, {"epoch": 3, "train_loss": 0.5957, "val_macro_f1": 0.5485}, {"epoch": 4, "train_loss": 0.4339, "val_macro_f1": 0.5492}]},
-    {"model": "CAMeL-Lab/bert-base-arabic-camelbert-mix", "seed": 1234, "best_epoch": 4,
-     "validation": {"accuracy": 0.6563, "macro_f1": 0.5367, "f1": {"positive": 0.4476, "negative": 0.5827, "mixed": 0.3417, "objective": 0.7749}},
-     "test": {"accuracy": 0.6558, "macro_f1": 0.5473, "f1": {"positive": 0.5224, "negative": 0.5443, "mixed": 0.3507, "objective": 0.7717}},
-     "history": [{"epoch": 1, "train_loss": 1.2266, "val_macro_f1": 0.5108}, {"epoch": 2, "train_loss": 0.8688, "val_macro_f1": 0.5079}, {"epoch": 3, "train_loss": 0.6149, "val_macro_f1": 0.5279}, {"epoch": 4, "train_loss": 0.4499, "val_macro_f1": 0.5367}]}
+    {
+      "model": "CAMeL-Lab/bert-base-arabic-camelbert-da",
+      "seed": 42,
+      "best_epoch": 3,
+      "validation": {
+        "accuracy": 0.6668,
+        "macro_f1": 0.5436,
+        "f1": {
+          "positive": 0.446,
+          "negative": 0.5683,
+          "mixed": 0.3756,
+          "objective": 0.7844
+        }
+      },
+      "test": {
+        "accuracy": 0.6543,
+        "macro_f1": 0.5371,
+        "f1": {
+          "positive": 0.5118,
+          "negative": 0.5304,
+          "mixed": 0.3309,
+          "objective": 0.7751
+        }
+      },
+      "history": [
+        {
+          "epoch": 1,
+          "train_loss": 1.212,
+          "val_macro_f1": 0.4962
+        },
+        {
+          "epoch": 2,
+          "train_loss": 0.8758,
+          "val_macro_f1": 0.5266
+        },
+        {
+          "epoch": 3,
+          "train_loss": 0.5898,
+          "val_macro_f1": 0.5436
+        },
+        {
+          "epoch": 4,
+          "train_loss": 0.4096,
+          "val_macro_f1": 0.5291
+        }
+      ]
+    },
+    {
+      "model": "CAMeL-Lab/bert-base-arabic-camelbert-da",
+      "seed": 7,
+      "best_epoch": 3,
+      "validation": {
+        "accuracy": 0.6633,
+        "macro_f1": 0.5297,
+        "f1": {
+          "positive": 0.4439,
+          "negative": 0.5411,
+          "mixed": 0.3422,
+          "objective": 0.7914
+        }
+      },
+      "test": {
+        "accuracy": 0.6513,
+        "macro_f1": 0.5287,
+        "f1": {
+          "positive": 0.5113,
+          "negative": 0.4806,
+          "mixed": 0.3413,
+          "objective": 0.7816
+        }
+      },
+      "history": [
+        {
+          "epoch": 1,
+          "train_loss": 1.2205,
+          "val_macro_f1": 0.4341
+        },
+        {
+          "epoch": 2,
+          "train_loss": 0.8645,
+          "val_macro_f1": 0.5268
+        },
+        {
+          "epoch": 3,
+          "train_loss": 0.6004,
+          "val_macro_f1": 0.5297
+        },
+        {
+          "epoch": 4,
+          "train_loss": 0.4241,
+          "val_macro_f1": 0.5247
+        }
+      ]
+    },
+    {
+      "model": "CAMeL-Lab/bert-base-arabic-camelbert-da",
+      "seed": 1234,
+      "best_epoch": 4,
+      "validation": {
+        "accuracy": 0.6608,
+        "macro_f1": 0.5247,
+        "f1": {
+          "positive": 0.4163,
+          "negative": 0.5513,
+          "mixed": 0.3438,
+          "objective": 0.7875
+        }
+      },
+      "test": {
+        "accuracy": 0.6638,
+        "macro_f1": 0.5464,
+        "f1": {
+          "positive": 0.4949,
+          "negative": 0.5227,
+          "mixed": 0.3832,
+          "objective": 0.7847
+        }
+      },
+      "history": [
+        {
+          "epoch": 1,
+          "train_loss": 1.2073,
+          "val_macro_f1": 0.5221
+        },
+        {
+          "epoch": 2,
+          "train_loss": 0.8793,
+          "val_macro_f1": 0.5126
+        },
+        {
+          "epoch": 3,
+          "train_loss": 0.6032,
+          "val_macro_f1": 0.5124
+        },
+        {
+          "epoch": 4,
+          "train_loss": 0.4217,
+          "val_macro_f1": 0.5247
+        }
+      ]
+    },
+    {
+      "model": "CAMeL-Lab/bert-base-arabic-camelbert-mix",
+      "seed": 42,
+      "best_epoch": 2,
+      "validation": {
+        "accuracy": 0.6653,
+        "macro_f1": 0.5375,
+        "f1": {
+          "positive": 0.4527,
+          "negative": 0.5992,
+          "mixed": 0.3112,
+          "objective": 0.7869
+        }
+      },
+      "test": {
+        "accuracy": 0.6568,
+        "macro_f1": 0.5466,
+        "f1": {
+          "positive": 0.5147,
+          "negative": 0.552,
+          "mixed": 0.3459,
+          "objective": 0.7738
+        }
+      },
+      "history": [
+        {
+          "epoch": 1,
+          "train_loss": 1.1835,
+          "val_macro_f1": 0.4986
+        },
+        {
+          "epoch": 2,
+          "train_loss": 0.8452,
+          "val_macro_f1": 0.5375
+        },
+        {
+          "epoch": 3,
+          "train_loss": 0.5911,
+          "val_macro_f1": 0.5373
+        },
+        {
+          "epoch": 4,
+          "train_loss": 0.4326,
+          "val_macro_f1": 0.5372
+        }
+      ]
+    },
+    {
+      "model": "CAMeL-Lab/bert-base-arabic-camelbert-mix",
+      "seed": 7,
+      "best_epoch": 2,
+      "validation": {
+        "accuracy": 0.6718,
+        "macro_f1": 0.5515,
+        "f1": {
+          "positive": 0.4789,
+          "negative": 0.6086,
+          "mixed": 0.3341,
+          "objective": 0.7844
+        }
+      },
+      "test": {
+        "accuracy": 0.6548,
+        "macro_f1": 0.5334,
+        "f1": {
+          "positive": 0.4916,
+          "negative": 0.5422,
+          "mixed": 0.3206,
+          "objective": 0.7793
+        }
+      },
+      "history": [
+        {
+          "epoch": 1,
+          "train_loss": 1.1963,
+          "val_macro_f1": 0.4848
+        },
+        {
+          "epoch": 2,
+          "train_loss": 0.8368,
+          "val_macro_f1": 0.5515
+        },
+        {
+          "epoch": 3,
+          "train_loss": 0.5957,
+          "val_macro_f1": 0.5485
+        },
+        {
+          "epoch": 4,
+          "train_loss": 0.4339,
+          "val_macro_f1": 0.5492
+        }
+      ]
+    },
+    {
+      "model": "CAMeL-Lab/bert-base-arabic-camelbert-mix",
+      "seed": 1234,
+      "best_epoch": 4,
+      "validation": {
+        "accuracy": 0.6563,
+        "macro_f1": 0.5367,
+        "f1": {
+          "positive": 0.4476,
+          "negative": 0.5827,
+          "mixed": 0.3417,
+          "objective": 0.7749
+        }
+      },
+      "test": {
+        "accuracy": 0.6558,
+        "macro_f1": 0.5473,
+        "f1": {
+          "positive": 0.5224,
+          "negative": 0.5443,
+          "mixed": 0.3507,
+          "objective": 0.7717
+        }
+      },
+      "history": [
+        {
+          "epoch": 1,
+          "train_loss": 1.2266,
+          "val_macro_f1": 0.5108
+        },
+        {
+          "epoch": 2,
+          "train_loss": 0.8688,
+          "val_macro_f1": 0.5079
+        },
+        {
+          "epoch": 3,
+          "train_loss": 0.6149,
+          "val_macro_f1": 0.5279
+        },
+        {
+          "epoch": 4,
+          "train_loss": 0.4499,
+          "val_macro_f1": 0.5367
+        }
+      ]
+    }
   ],
   "summary_mean_std": {
-    "CAMeL-Lab/bert-base-arabic-camelbert-da": {"val_macro_f1": "0.5327 ± 0.0098", "test_macro_f1": "0.5374 ± 0.0088", "test_accuracy": "0.6565 ± 0.0065"},
-    "CAMeL-Lab/bert-base-arabic-camelbert-mix": {"val_macro_f1": "0.5419 ± 0.0083", "test_macro_f1": "0.5424 ± 0.0078", "test_accuracy": "0.6558 ± 0.0010"}
+    "CAMeL-Lab/bert-base-arabic-camelbert-da": {
+      "val_macro_f1": "0.5327 ± 0.0098",
+      "test_macro_f1": "0.5374 ± 0.0088",
+      "test_accuracy": "0.6565 ± 0.0065"
+    },
+    "CAMeL-Lab/bert-base-arabic-camelbert-mix": {
+      "val_macro_f1": "0.5419 ± 0.0083",
+      "test_macro_f1": "0.5424 ± 0.0078",
+      "test_accuracy": "0.6558 ± 0.0010"
+    }
   },
-  "selected": {"model": "CAMeL-Lab/bert-base-arabic-camelbert-mix", "seed": 7, "reason": "highest mean validation macro-F1, then highest validation macro-F1 among its seeds"},
+  "selected": {
+    "model": "CAMeL-Lab/bert-base-arabic-camelbert-mix",
+    "seed": 7,
+    "reason": "highest mean validation macro-F1, then highest validation macro-F1 among its seeds"
+  },
   "selected_confusion": {
-    "labels": ["positive", "negative", "mixed", "objective"],
-    "rows_true_columns_predicted": [[103, 4, 17, 35], [13, 212, 58, 53], [11, 62, 67, 26], [133, 168, 110, 927]]
+    "labels": [
+      "positive",
+      "negative",
+      "mixed",
+      "objective"
+    ],
+    "rows_true_columns_predicted": [
+      [
+        103,
+        4,
+        17,
+        35
+      ],
+      [
+        13,
+        212,
+        58,
+        53
+      ],
+      [
+        11,
+        62,
+        67,
+        26
+      ],
+      [
+        133,
+        168,
+        110,
+        927
+      ]
+    ]
   },
   "selected_misclassified": "690 of 1999 test tweets",
   "spot_checks": [
-    {"text": "الفيلم ده تحفة بجد", "predicted": "positive", "score": 0.8485},
-    {"text": "الخدمة زفت ومش هتعامل معاهم تاني", "predicted": "negative", "score": 0.6365},
-    {"text": "الأكل حلو بس الأسعار غالية اوي", "predicted": "positive", "score": 0.7017, "note": "expected mixed"},
-    {"text": "الماتش هيبدأ الساعة تسعة", "predicted": "objective", "score": 0.7576}
-  ]
+    {
+      "text": "الفيلم ده تحفة بجد",
+      "predicted": "positive",
+      "score": 0.8485
+    },
+    {
+      "text": "الخدمة زفت ومش هتعامل معاهم تاني",
+      "predicted": "negative",
+      "score": 0.6365
+    },
+    {
+      "text": "الأكل حلو بس الأسعار غالية اوي",
+      "predicted": "positive",
+      "score": 0.7017,
+      "note": "expected mixed"
+    },
+    {
+      "text": "الماتش هيبدأ الساعة تسعة",
+      "predicted": "objective",
+      "score": 0.7576
+    }
+  ],
+  "browser_export": {
+    "note": "Selected model exported to ONNX for Transformers.js (scripts/export_onnx.py), checked on the 1,999 validation tweets.",
+    "pytorch_val_macro_f1": 0.5515,
+    "fp32_onnx": {
+      "mb": 437.8,
+      "max_logit_diff": 4.8e-06,
+      "same_label_python_onnxruntime": 1.0,
+      "same_label_transformersjs": 1.0,
+      "val_macro_f1": 0.5515
+    },
+    "int8_onnx_uint8_weights": {
+      "mb": 110.8,
+      "same_label_python_onnxruntime": 0.9125,
+      "same_label_transformersjs": 0.9245,
+      "val_macro_f1": 0.5499,
+      "transformersjs_ms_per_text_colab_cpu": 41.6
+    },
+    "rejected_int8_settings": {
+      "int8 per-tensor": "88.6% same labels",
+      "int8 per-channel": "43.8% same labels",
+      "int8 reduce_range": "66.7% same labels",
+      "MatMul-only uint8": "val macro-F1 0.5435, 181 MB"
+    }
+  }
 }
