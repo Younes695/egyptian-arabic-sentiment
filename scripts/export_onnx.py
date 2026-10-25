@@ -26,12 +26,14 @@ sys.path.insert(0, str(ROOT / "src"))
 INPUTS = ["input_ids", "attention_mask", "token_type_ids"]
 MIN_INT8_AGREEMENT = 0.97
 
-# Tried in this order. Leaving the embedding lookup (Gather) in fp32 and quantizing only the
-# matrix multiplications, per output channel, usually keeps BERT's predictions intact.
+# Signed int8 weights times unsigned int8 activations can saturate on CPUs without VNNI
+# instructions, which flipped about 11% of labels in the first export (and 56% with
+# per-channel weights). Unsigned int8 weights, or 7-bit weights (reduce_range), avoid that.
+# "all" also quantizes the embedding lookup (Gather), which roughly halves the file again.
 QUANT_OPTIONS = [
-    {"name": "matmul-per-channel", "op_types_to_quantize": ["MatMul"], "per_channel": True},
-    {"name": "matmul", "op_types_to_quantize": ["MatMul"], "per_channel": False},
-    {"name": "all-per-channel", "op_types_to_quantize": None, "per_channel": True},
+    {"name": "all-uint8", "op_types_to_quantize": None, "weight_type": "QUInt8", "reduce_range": False},
+    {"name": "all-int8-reduce-range", "op_types_to_quantize": None, "weight_type": "QInt8", "reduce_range": True},
+    {"name": "matmul-uint8", "op_types_to_quantize": ["MatMul"], "weight_type": "QUInt8", "reduce_range": False},
 ]
 
 
@@ -77,8 +79,8 @@ def quantize(fp32: Path, out: Path, option: dict) -> Path:
     quantize_dynamic(
         str(fp32),
         str(out),
-        weight_type=QuantType.QInt8,
-        per_channel=option["per_channel"],
+        weight_type=getattr(QuantType, option["weight_type"]),
+        reduce_range=option["reduce_range"],
         op_types_to_quantize=option["op_types_to_quantize"],
     )
     return out
